@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(omron_drive)
+project(rv_omron_driver)
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
@@ -59,11 +59,11 @@ include_directories(
   src
 )
 
-add_executable(driver_node src/pub_laser.cpp)
+add_executable(omron_laser_node src/pub_laser.cpp)
 
-target_link_libraries(driver_node
+target_link_libraries(omron_laser_node
   ${catkin_LIBRARIES} Aria ArNetworking
 )
 
-install(TARGETS driver_node
+install(TARGETS omron_laser_node
         RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})

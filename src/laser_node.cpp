@@ -11,7 +11,7 @@ class laserPub
 {
 public:
   //Constructor sets up the rostop
-  laserPub(ArClientBase *client, ros::NodeHandle *nh, std::string topic="/laser"); 
+  laserPub(ArClientBase *client, ros::NodeHandle *nh, std::string name="Laser_1Current", std::string topic="/laser"); 
   //The laser callback is called when data is sent from the robot and publishes to ROS
   void laser_cb(ArNetPacket *packet);
 
@@ -28,13 +28,13 @@ protected:
 };
 
 //Setup laserpub
-laserPub::laserPub(ArClientBase *client, ros::NodeHandle *nh, std::string topic) : myClient(client), _nh(nh), myLaserCB(this, &laserPub::laser_cb)
+laserPub::laserPub(ArClientBase *client, ros::NodeHandle *nh, std::string name, std::string topic) : myClient(client), _nh(nh), myLaserCB(this, &laserPub::laser_cb)
 {
   laser_pub = _nh->advertise<sensor_msgs::PointCloud2>(topic, 1);
-  myClient->addHandler("Laser_1Current", &myLaserCB);
-  myClient->request("Laser_1Current", 200);
+  myClient->addHandler(name.c_str(), &myLaserCB);
+  myClient->request(name.c_str(), 200); //Assumes rate of 5hz, TODO could be param
 
-  ROS_INFO("Setup Callback");
+  ROS_INFO("Setup Callback for %s publishing on %s",name.c_str(), topic.c_str());
 }
 
 void laserPub::laser_cb(ArNetPacket *packet)
@@ -103,7 +103,7 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "omron");
 
   //make node handle  
-  ros::NodeHandle n;
+  ros::NodeHandle n, np("~");
 
   //Aria
   Aria::init();
@@ -119,13 +119,37 @@ int main(int argc, char **argv)
   //--------  
   //HOST
   args.addPlain("-host");
-  args.addPlain("172.19.21.203");  //TODO replace with ROS param
+  std::string sparam;
+  if (np.getParam("host", sparam))
+  {
+    args.addPlain(sparam.c_str());
+  }
+  else
+  {
+    args.addPlain("172.19.21.203");  //Default IP
+  }
+  
   //PORT
   args.addPlain("-p");
-  args.addPlain("7272");  //TODO replace with ROS param
+  if (np.getParam("port", sparam))
+  {
+    args.addPlain(sparam.c_str());
+  }
+  else
+  {
+    args.addPlain("7272");  //Default PORT
+  }
+
   //USER
   args.addPlain("-u");
-  args.addPlain("steve");  //TODO replace with ROS param
+  if (np.getParam("user", sparam))
+  {
+    args.addPlain(sparam.c_str());
+  }
+  else
+  {
+    args.addPlain("omron");  //Default user
+  }
   //NO PASSWD
   args.addPlain("-np");
 
@@ -148,6 +172,9 @@ int main(int argc, char **argv)
 
   //Setup the laser pub object
   laserPub pub(&client, &n);
+
+  //Setup the laser_low pub object
+  laserPub pub_low(&client, &n, "Laser_2Current", "/laser_low");
 
   client.runAsync();
 

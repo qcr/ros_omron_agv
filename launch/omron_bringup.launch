@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<!--Launch file to start the omron base-->
+<launch>
+  <node pkg="rv_omron_driver" type="omron_laser_node" name="lasers" output="screen" respawn="false" respawn_delay="0">
+    <param name="user" type="str" value="steve"/>
+  </node>
+</launch>
