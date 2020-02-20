@@ -100,7 +100,7 @@ void handleGetMap(ArNetPacket *packet)
     //Iterate through points and fill
     for(int i=0; i < point_list->size(); i++){
       int coord = gridX *  ((point_list->at(i).getY()-minPose.getY())/res) + (point_list->at(i).getX()-minPose.getX()) /res; //Y is flipped apparent
-      printf("Point at Coord %d of %d\n", coord, gridX*gridY);
+      //printf("Point at Coord %d of %d\n", coord, gridX*gridY);
       map_resp_.map.data[coord] = 100;
     }
 

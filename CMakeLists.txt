@@ -7,6 +7,13 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   std_msgs
 	tf
+	tf2
+	tf2_ros
+	tf2_eigen
+	rv_msgs
+	actionlib
+	actionlib_msgs
+	move_base_msgs
 )
 
 find_package(Boost REQUIRED COMPONENTS thread)

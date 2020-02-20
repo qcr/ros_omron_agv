@@ -50,6 +50,10 @@
   <!--   <doc_depend>doxygen</doc_depend> -->
   <depend>libaria</depend>
   <depend>tf</depend>
+  <depend>tf2</depend>
+  <depend>actionlib</depend>
+  <depend>actionlib_msgs</depend>
+  <depend>move_base_msgs</depend>	
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>roscpp</build_depend>
   <build_depend>rospy</build_depend>
