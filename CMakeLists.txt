@@ -6,6 +6,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   sensor_msgs
   std_msgs
+	tf
 )
 
 find_package(Boost REQUIRED COMPONENTS thread)
@@ -59,11 +60,18 @@ include_directories(
   src
 )
 
-add_executable(omron_laser_node src/pub_laser.cpp)
+add_executable(omron_laser_node src/laser_node.cpp)
+add_executable(robot_status_node src/robot_status.cpp)
+add_executable(map_node src/map_server.cpp)
 
 target_link_libraries(omron_laser_node
   ${catkin_LIBRARIES} Aria ArNetworking
 )
 
-install(TARGETS omron_laser_node
-        RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+target_link_libraries(robot_status_node
+  ${catkin_LIBRARIES} Aria ArNetworking
+)
+
+target_link_libraries(map_node
+  ${catkin_LIBRARIES} Aria ArNetworking
+)

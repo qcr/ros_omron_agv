@@ -1,3 +1,7 @@
+//ROS OMRON driver
+//------------------
+
+
 
 #include "Aria.h"
 #include "ArNetworking.h"
@@ -43,7 +47,7 @@ void laserPub::laser_cb(ArNetPacket *packet)
   
   myScan.header.stamp = ros::Time::now();
   myScan.header.seq = seq++;
-  myScan.header.frame_id = "base_link";
+  myScan.header.frame_id = "map";
 
   int x, y;
   int numReadings;
