@@ -1,6 +1,6 @@
 #Robot Stats
 
-unit8 batteryPercentage
+uint8 batteryPercentage
 
 uint8 dockStatus
 uint8 UNDOCKED = 0

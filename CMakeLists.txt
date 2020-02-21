@@ -56,6 +56,16 @@ else()
 	endif()
 endif()
 
+add_message_files(
+  FILES
+  Omron.msg
+)
+
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+)
+
 
 catkin_package()
 
@@ -68,6 +78,7 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
   src
 )
+
 
 add_executable(omron_laser_node src/laser_node.cpp)
 add_executable(robot_status_node src/robot_status.cpp)

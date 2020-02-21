@@ -17,6 +17,7 @@
 #include <actionlib_msgs/GoalStatus.h>
 #include "rv_msgs/SimpleRequest.h"
 #include <std_srvs/Empty.h>
+#include "rv_omron_driver/Omron.h"
 
 #include <cmath>
 
@@ -71,6 +72,19 @@ protected:
 
   //Dock server
   ros::ServiceServer service;
+
+  //Define callbacks
+  void cmdVelCB(const geometry_msgs::Twist::ConstPtr& msg);
+  void cmdVelWD(const ros::TimerEvent&);
+
+
+  //Cmd Vel variables
+  ros::Timer timer;
+  ros::Subscriber cmdVelSub;
+  uint8_t velCount;
+  uint8_t prevVelCount;
+  bool vel_valid;
+
 };
 
 //Setup setup callbac stuff
@@ -106,20 +120,29 @@ statusPub::statusPub(ArClientBase *client, ros::NodeHandle *nh, std::string name
   //Setup 
   service = _nh->advertiseService("dock", &statusPub::requestDock, this);
 
+  //Advertise Publisher
+  status_pub = _nh->advertise<rv_omron_driver::Omron>("robot_status", 100);
+
+  //Cmd vel
+  cmdVelSub = _nh->subscribe("cmd_vel", 10, &statusPub::cmdVelCB, this); //register callback
+  timer=_nh->createTimer(ros::Duration(0.2), &statusPub::cmdVelWD, this);
+  velCount = 0;
+  prevVelCount = 0;
+  vel_valid = false;
 }
 
 void statusPub::pose_cb(ArNetPacket *packet)
 {
-  int batVolt, x , y, theta, x_vel, y_vel, theta_vel, temp;
+  double batVolt, x , y, theta, x_vel, y_vel, theta_vel, temp;
 
-  batVolt = packet->bufToByte2();
-  x = packet->bufToByte4();
-  y = packet->bufToByte4();
-  theta = packet->bufToByte2();
-  x_vel = packet->bufToByte2();
-  theta_vel = packet->bufToByte2();
-  y_vel = packet->bufToByte2();
-  temp = packet->bufToByte();
+  batVolt = ( (double) packet->bufToByte2() )/10.0;
+  x = (double) packet->bufToByte4();
+  y = (double) packet->bufToByte4();
+  theta = (double) packet->bufToByte2();
+  x_vel = (double) packet->bufToByte2();
+  theta_vel = (double) packet->bufToByte2();
+  y_vel = (double) packet->bufToByte2();
+  temp = (double) packet->bufToByte();
 
   static tf::TransformBroadcaster br; 
   tf::Transform transform;
@@ -139,7 +162,12 @@ void statusPub::pose_cb(ArNetPacket *packet)
   currentPose.pose.position.y = y/1000.0;
   currentPose.pose.position.z = 0;
 
-  //TODO publish the status data
+  rv_omron_driver::Omron data;
+  data.batteryPercentage = batVolt;
+  data.dockStatus = dock_status;
+  data.robotStatus = robotStatus;
+  //publish the status data
+  status_pub.publish(data);
 }
 
 void statusPub::status_cb(ArNetPacket *packet)
@@ -324,7 +352,7 @@ void statusPub::moveExecteCB(const move_base_msgs::MoveBaseGoalConstPtr &goal){
         success = true;
         as_.setSucceeded(result_);
     }
-    if (robotStatus == actionlib_msgs::GoalStatus::ABORTED || robotStatus == actionlib_msgs::GoalStatus::ABORTED){
+    if (robotStatus == actionlib_msgs::GoalStatus::ABORTED || robotStatus == actionlib_msgs::GoalStatus::REJECTED){
         ROS_INFO("%s: Failed getting to Goal", "Move Base");
         running = false;
         success = false;
@@ -341,7 +369,31 @@ void statusPub::moveExecteCB(const move_base_msgs::MoveBaseGoalConstPtr &goal){
 
 }
 
+void statusPub::cmdVelCB(const geometry_msgs::Twist::ConstPtr& msg){
+  velCount++;
+  vel_valid = true;
 
+  ArNetPacket packet;
+  packet.doubleToBuf(msg->linear.x);
+  packet.doubleToBuf(msg->angular.z);
+  packet.doubleToBuf(100); // this is an additional amount (percentage) that is applied to each of the trans,rot,lat velocities. 
+  packet.doubleToBuf(0.0);
+//  if (myPrinting) printf("ArClientRatioDrive: Sending ratioDrive request\n");
+  myClient->requestOnce("ratioDrive", &packet);
+
+}
+
+void statusPub::cmdVelWD(const ros::TimerEvent&){
+    if (velCount - prevVelCount > 0){
+      //Valid data
+      prevVelCount = velCount;
+    }
+    else if (vel_valid == true){
+      vel_valid = false;
+      myClient->requestOnce("stop");
+      ROS_WARN("Timeout on cmd_vel");
+    }
+}
 
 
 int main(int argc, char **argv)
@@ -422,7 +474,7 @@ int main(int argc, char **argv)
 
   client.runAsync();
 
-  ros::spin();
+  ros::spin();  
 
   client.disconnect();
   Aria::exit(0);
