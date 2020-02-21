@@ -15,7 +15,8 @@
 #include <move_base_msgs/MoveBaseAction.h>
 #include <actionlib/server/simple_action_server.h>
 #include <actionlib_msgs/GoalStatus.h>
-
+#include "rv_msgs/SimpleRequest.h"
+#include <std_srvs/Empty.h>
 
 #include <cmath>
 
@@ -32,6 +33,12 @@ public:
   void LocaliseCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg);
   void moveExecteCB(const move_base_msgs::MoveBaseGoalConstPtr &goal);
 
+  bool requestDock(rv_msgs::SimpleRequest::Request &req, rv_msgs::SimpleRequest::Response &res){
+    res.result = true;
+    myClient->requestOnce("dock");
+    return true;
+  } 
+
   //Public robot stats
   int robotMode = 0;
   int robotStatus = 0;
@@ -45,7 +52,6 @@ protected:
   ArClientBase *myClient;
   ros::NodeHandle *_nh;
   ros::Subscriber sub_goal, sub_initpose;
-
 
 
   //Don't understand the ArFunctors but this is how they do it
@@ -62,6 +68,9 @@ protected:
   move_base_msgs::MoveBaseFeedback feedback_; 
   move_base_msgs::MoveBaseResult result_;
 
+
+  //Dock server
+  ros::ServiceServer service;
 };
 
 //Setup setup callbac stuff
@@ -74,7 +83,7 @@ statusPub::statusPub(ArClientBase *client, ros::NodeHandle *nh, std::string name
   //Setup simple status publisher
   //TODO  
 
-    //Setup Callback for simple goal & localisation
+  //Setup Callback for simple goal & localisation
   sub_goal = _nh->subscribe("/move_base_simple/goal", 10, &statusPub::simplePoseCallback, this);
   sub_initpose = _nh->subscribe("/initialpose", 10, &statusPub::LocaliseCallback, this);
   ros::spinOnce;     
@@ -93,6 +102,9 @@ statusPub::statusPub(ArClientBase *client, ros::NodeHandle *nh, std::string name
 
   //Create the action server
   as_.start();
+
+  //Setup 
+  service = _nh->advertiseService("dock", &statusPub::requestDock, this);
 
 }
 
@@ -328,6 +340,9 @@ void statusPub::moveExecteCB(const move_base_msgs::MoveBaseGoalConstPtr &goal){
 
 
 }
+
+
+
 
 int main(int argc, char **argv)
 {

@@ -6,6 +6,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   sensor_msgs
   std_msgs
+	std_srvs
 	tf
 	tf2
 	tf2_ros
@@ -14,6 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
 	actionlib
 	actionlib_msgs
 	move_base_msgs
+	message_generation
 )
 
 find_package(Boost REQUIRED COMPONENTS thread)
