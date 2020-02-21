@@ -37,6 +37,8 @@ public:
   int robotStatus = 0;
   int dock_status = 0;
 
+  geometry_msgs::PoseStamped currentPose;
+
 protected:
 
   ros::Publisher pose_pub, status_pub;
@@ -57,8 +59,8 @@ protected:
   actionlib::SimpleActionServer<move_base_msgs::MoveBaseAction> as_; //Make a simple move to pose action server
 
   //feedback mesaages 
-  move_base_msgs::MoveBaseActionFeedback feedback_;
-  move_base_msgs::MoveBaseActionResult result_;
+  move_base_msgs::MoveBaseFeedback feedback_; 
+  move_base_msgs::MoveBaseResult result_;
 
 };
 
@@ -115,6 +117,16 @@ void statusPub::pose_cb(ArNetPacket *packet)
   transform.setRotation(q);
   br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "map", "base_link"));
 
+  currentPose.header.frame_id = "base_link";
+  currentPose.header.stamp = ros::Time::now();
+  currentPose.pose.orientation.x = q.getX();
+  currentPose.pose.orientation.y = q.getY();
+  currentPose.pose.orientation.z = q.getZ();
+  currentPose.pose.orientation.w = q.getW();
+  currentPose.pose.position.x = x/1000.0;
+  currentPose.pose.position.y = y/1000.0;
+  currentPose.pose.position.z = 0;
+
   //TODO publish the status data
 }
 
@@ -127,19 +139,35 @@ void statusPub::status_cb(ArNetPacket *packet)
   packet->bufToStr(myStatus, sizeof(myStatus));
   packet->bufToStr(myMode, sizeof(myMode));
 
-  ROS_INFO("Status %10s", myStatus);
-
 
   //Lets fill status using ActionLib Msgs - Goal Status
   char * pch;
-  pch = strstr(myStatus, "Parking");
+  pch = strstr(myStatus, "Parking");  //When it is in an idle state the robot retruns parking
   if (pch != NULL){
     robotStatus = actionlib_msgs::GoalStatus::PENDING;
   }
-  pch = strstr(myStatus, "Going");
+  pch = strstr(myStatus, "Undocking");  //Undocking to move to the goal
   if (pch != NULL){
-    robotStatus = actionlib_msgs::GoalStatus::PENDING;
+    robotStatus = actionlib_msgs::GoalStatus::ACTIVE;
   }
+  pch = strstr(myStatus, "Going"); //Moving to goal
+  if (pch != NULL){
+    robotStatus = actionlib_msgs::GoalStatus::ACTIVE;
+  }
+  pch = strstr(myStatus, "Arrived"); //Got to goal
+  if (pch != NULL){
+    robotStatus = actionlib_msgs::GoalStatus::SUCCEEDED;
+  }
+  pch = strstr(myStatus, "Failed: Failed going to goal"); //Couldn't make it e.g. path blocked
+  if (pch != NULL){
+    robotStatus = actionlib_msgs::GoalStatus::ABORTED;
+  }
+  pch = strstr(myStatus, "Failed: Cannot find path"); //Couldnt find valid plan
+  if (pch != NULL){
+    robotStatus = actionlib_msgs::GoalStatus::REJECTED;
+  }
+
+  //ROS_INFO("Status %10s, code %d", myStatus, robotStatus);
 
 }
 
@@ -234,8 +262,69 @@ void statusPub::LocaliseCallback(const geometry_msgs::PoseWithCovarianceStamped:
 
 void statusPub::moveExecteCB(const move_base_msgs::MoveBaseGoalConstPtr &goal){
   //TODO
-  ROS_WARN_STREAM("Couldn't move to pre-grasp pose");
+  //<td>gotoPose</td> <td> X (4-byte integer), Y (4-byte int), Theta (optional 2-byte int)</td>
 
+  int x = goal->target_pose.pose.position.x*1000;
+  int y = goal->target_pose.pose.position.y*1000;
+
+  tf2::Quaternion orientation;
+  tf2::fromMsg(goal->target_pose.pose.orientation,orientation);
+
+  double roll, pitch, yaw;
+  tf2::Matrix3x3(orientation).getRPY(roll, pitch, yaw);
+
+  int theta = angles::to_degrees(yaw);
+
+  ROS_INFO("I got a pose at (%d, %d) Theta: %d", x, y, theta);
+
+  ArNetPacket p;
+  p.byte4ToBuf(x); //X
+  p.byte4ToBuf(y); //Y
+  p.byte4ToBuf(theta); //Theta
+  myClient->requestOnce("gotoPose", &p);
+
+  //Provide feedback at 10hz
+  ros::Rate r(10);
+
+  bool running = true;
+  bool success = true;
+  while (running){
+    
+    //Check if pre-empted
+    if (as_.isPreemptRequested() || !ros::ok()){
+        ROS_INFO("%s: Preempted", "Move Base");
+        // set the action state to preempted
+        as_.setPreempted();
+        success = false;
+        running = false;
+
+        //stop robot
+        myClient->requestOnce("stop", NULL);
+    }
+
+    //Check if active 
+    if (robotStatus == actionlib_msgs::GoalStatus::ACTIVE){
+        ROS_INFO("%s: Moving to Goal", "Move Base");
+    }
+    if (robotStatus == actionlib_msgs::GoalStatus::SUCCEEDED){
+        ROS_INFO("%s: Got to Goal", "Move Base");
+        running = false;
+        success = true;
+        as_.setSucceeded(result_);
+    }
+    if (robotStatus == actionlib_msgs::GoalStatus::ABORTED || robotStatus == actionlib_msgs::GoalStatus::ABORTED){
+        ROS_INFO("%s: Failed getting to Goal", "Move Base");
+        running = false;
+        success = false;
+        as_.setAborted(result_);
+    }
+
+    feedback_.base_position = currentPose;
+    as_.publishFeedback(feedback_);
+
+    r.sleep();
+  }
+    
 
 
 }
