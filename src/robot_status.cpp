@@ -15,7 +15,7 @@
 #include <move_base_msgs/MoveBaseAction.h>
 #include <actionlib/server/simple_action_server.h>
 #include <actionlib_msgs/GoalStatus.h>
-#include "rv_msgs/SimpleRequest.h"
+#include <rv_msgs/SimpleRequest.h>
 #include <std_srvs/Empty.h>
 #include "rv_omron_driver/Omron.h"
 
@@ -322,6 +322,8 @@ void statusPub::moveExecteCB(const move_base_msgs::MoveBaseGoalConstPtr &goal){
   p.byte4ToBuf(y); //Y
   p.byte4ToBuf(theta); //Theta
   myClient->requestOnce("gotoPose", &p);
+
+  ros::Duration(0.5).sleep(); //Takes some time to switch states on robot
 
   //Provide feedback at 10hz
   ros::Rate r(10);
