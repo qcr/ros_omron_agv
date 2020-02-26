@@ -1,5 +1,4 @@
 #Robot Stats
-
 uint8 batteryPercentage
 
 uint8 dockStatus

@@ -371,15 +371,19 @@ void statusPub::moveExecteCB(const move_base_msgs::MoveBaseGoalConstPtr &goal){
 
 void statusPub::cmdVelCB(const geometry_msgs::Twist::ConstPtr& msg){
   velCount++;
-  vel_valid = true;
-
-  ArNetPacket packet;
-  packet.doubleToBuf(msg->linear.x);
-  packet.doubleToBuf(msg->angular.z);
-  packet.doubleToBuf(100); // this is an additional amount (percentage) that is applied to each of the trans,rot,lat velocities. 
-  packet.doubleToBuf(0.0);
-//  if (myPrinting) printf("ArClientRatioDrive: Sending ratioDrive request\n");
-  myClient->requestOnce("ratioDrive", &packet);
+  if (fabs(msg->linear.x) > 0.001 || fabs(msg->angular.z) > 0.001){
+    ArNetPacket packet;
+    vel_valid = true;
+    packet.doubleToBuf(msg->linear.x);
+    packet.doubleToBuf(msg->angular.z);
+    packet.doubleToBuf(100); // this is an additional amount (percentage) that is applied to each of the trans,rot,lat velocities. 
+    packet.doubleToBuf(0.0);
+  //  if (myPrinting) printf("ArClientRatioDrive: Sending ratioDrive request\n");
+    myClient->requestOnce("ratioDrive", &packet);
+  }
+  else {
+    vel_valid = false;
+  }
 
 }
 
