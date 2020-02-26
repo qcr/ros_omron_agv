@@ -12,6 +12,8 @@ find_package(catkin REQUIRED COMPONENTS
 	tf2_ros
 	tf2_eigen
 	rv_msgs
+	rv_tasks
+	rv_trees
 	actionlib
 	actionlib_msgs
 	move_base_msgs

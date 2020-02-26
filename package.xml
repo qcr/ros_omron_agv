@@ -55,6 +55,8 @@
   <depend>actionlib_msgs</depend>
   <depend>move_base_msgs</depend>	
   <depend>rv_msgs</depend>	
+  <depend>rv_tasks</depend>	
+  <depend>rv_trees</depend>	
   <depend>std_srvs</depend>	
   <build_depend>message_generation</build_depend>
   <exec_depend>message_runtime</exec_depend>
