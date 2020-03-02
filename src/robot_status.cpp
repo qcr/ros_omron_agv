@@ -1,10 +1,9 @@
 //ROS OMRON driver
 //------------------
 
-
-#include "Aria.h"
-#include "ArNetworking.h"
-#include "ArClientRatioDrive.h"
+#include <Aria/Aria.h>
+#include <ArNetworking/ArNetworking.h>
+#include <ArNetworking/ArClientRatioDrive.h>
 #include "ros/ros.h"
 #include <tf/transform_broadcaster.h>
 #include <angles/angles.h>
@@ -390,14 +389,14 @@ void statusPub::cmdVelCB(const geometry_msgs::Twist::ConstPtr& msg){
 }
 
 void statusPub::cmdVelWD(const ros::TimerEvent&){
-    if (velCount - prevVelCount > 0){
+    if ((uint8_t)(velCount - prevVelCount) > 0){
       //Valid data
       prevVelCount = velCount;
     }
     else if (vel_valid == true){
       vel_valid = false;
       myClient->requestOnce("stop");
-      ROS_WARN("Timeout on cmd_vel");
+      ROS_WARN("Timeout on cmd_vel. velCount: %d, prevVelCount: %d", velCount, prevVelCount);
     }
 }
 

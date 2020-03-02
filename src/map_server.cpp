@@ -2,9 +2,9 @@
 //------------------
 
 
-#include "Aria.h"
-#include "ArNetworking.h"
-#include "ArClientRatioDrive.h"
+#include <Aria/Aria.h>
+#include <ArNetworking/ArNetworking.h>
+#include <ArNetworking/ArClientRatioDrive.h>
 #include "ros/ros.h"
 #include <tf/transform_broadcaster.h>
 #include <angles/angles.h>

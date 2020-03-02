@@ -48,7 +48,7 @@
   <!--   <test_depend>gtest</test_depend> -->
   <!-- Use doc_depend for packages you need only for building documentation: -->
   <!--   <doc_depend>doxygen</doc_depend> -->
-  <depend>libaria</depend>
+  <depend>rv_libaria</depend>
   <depend>tf</depend>
   <depend>tf2</depend>
   <depend>actionlib</depend>
@@ -57,7 +57,8 @@
   <depend>rv_msgs</depend>	
   <depend>rv_tasks</depend>	
   <depend>rv_trees</depend>	
-  <depend>std_srvs</depend>	
+  <depend>std_srvs</depend>
+  
   <build_depend>message_generation</build_depend>
   <exec_depend>message_runtime</exec_depend>
   <buildtool_depend>catkin</buildtool_depend>
@@ -74,8 +75,7 @@
   <exec_depend>rospy</exec_depend>
   <exec_depend>sensor_msgs</exec_depend>
   <exec_depend>std_msgs</exec_depend>
-
-
+  
   <!-- The export tag contains other, unspecified, tags -->
   <export>
     <!-- Other tools can request additional information be placed here -->

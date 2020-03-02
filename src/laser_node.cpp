@@ -3,9 +3,9 @@
 
 
 
-#include "Aria.h"
-#include "ArNetworking.h"
-#include "ArClientRatioDrive.h"
+#include <Aria/Aria.h>
+#include <ArNetworking/ArNetworking.h>
+#include <ArNetworking/ArClientRatioDrive.h>
 #include "ros/ros.h"
 #include "sensor_msgs/PointCloud2.h"
 
