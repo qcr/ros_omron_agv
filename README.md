@@ -1,3 +1,5 @@
+[![QUT Centre for Robotics Open Source](https://github.com/qcr/qcr.github.io/blob/master/misc/badge.svg)](https://qcr.github.io)
+
 # OMRON ROS Robot driver
 The OMRON LD-60 is a capable platform out of the box but has no ROS support. Fortunatelyt he LD-60 s still really a Pioneer at heart and there is significant resources in the public domain which can interface to the platform. 
 
