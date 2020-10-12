@@ -1,19 +1,20 @@
 # OMRON ROS Robot driver
-===
-The OMRON LD-60 is a capable platform out of the box but does not natively support any ROS capabilities. Fortunately being a legacy platform built on Adepbt, built on MobileRobots, built on ActivMedia .... there is significant documentattion in the public domain and the LD-60 at heart is still really a Pioneer. 
+The OMRON LD-60 is a capable platform out of the box but has no ROS support. Fortunatelyt he LD-60 s still really a Pioneer at heart and there is significant resources in the public domain which can interface to the platform. 
+
+This does not replace Mobile Planner. Mobile Planner is still used for map creation and robot configuration. *Note: Mobile planner will run inside Wine on Ubuntu 18.04
 
 This driver currently assumes you have a user (which can be set via Mobile Planner) with no password. 
 
-*Note: Mobile planner will run inside Wine on Ubuntu 18.04
+<img src="https://assets.omron.eu/images/mobilerobot_2_prod-675x450.jpg" alt="LD-60 Robot" style="zoom:33%;" />
 
+## Required Parameters
 
-## Parameters
+ **Host IP**: String     e.g. 172.168.1.1
 
-These can be set via ROS Param
- 
- host : IP String     e.g. host : 172.168.1.1
- port : Port String     e.g. port : 7272
- user : User String  e.g user : omron
+ **Host Port**: String     e.g. 7272
+
+ **User**: String  e.g. omron
+
 
 
 ## Topics 
@@ -39,3 +40,6 @@ These can be set via ROS Param
 
 
 
+## Getting Started
+
+*Coming Soon*
