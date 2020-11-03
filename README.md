@@ -8,7 +8,7 @@ This does not replace Mobile Planner. Mobile Planner is still used for map creat
 
 This driver currently assumes you have a user (which can be set via Mobile Planner) with no password. 
 
-<img src="https://assets.omron.eu/images/mobilerobot_2_prod-675x450.jpg" alt="LD-60 Robot" style="zoom:33%;" />
+<img src="./docs/omron_robot.jpg" alt="LD-60 Robot" style="zoom:33%;" />
 
 ## Required Parameters
 
