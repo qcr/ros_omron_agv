@@ -2,20 +2,19 @@ cmake_minimum_required(VERSION 2.8.3)
 project(ros_omron_agv)
 
 find_package(catkin REQUIRED COMPONENTS
-  roscpp
-  rospy
+  actionlib
+  actionlib_msgs
+  libaria
+  move_base_msgs
+	roscpp
   sensor_msgs
   std_msgs
 	std_srvs
 	tf
 	tf2
-	tf2_ros
 	tf2_eigen
-	actionlib
-	actionlib_msgs
-	move_base_msgs
+	tf2_ros
 	message_generation
-	libaria
 )
 
 find_package(Boost REQUIRED COMPONENTS thread)
