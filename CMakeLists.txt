@@ -2,10 +2,12 @@ cmake_minimum_required(VERSION 2.8.3)
 project(ros_omron_agv)
 
 find_package(catkin REQUIRED COMPONENTS
+  angles
   actionlib
   actionlib_msgs
   libaria
   move_base_msgs
+  nav_msgs
 	roscpp
   sensor_msgs
   std_msgs
