@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(rv_omron_driver)
+project(ros_omron_driver)
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
@@ -11,9 +11,6 @@ find_package(catkin REQUIRED COMPONENTS
 	tf2
 	tf2_ros
 	tf2_eigen
-	rv_msgs
-	rv_tasks
-	rv_trees
 	actionlib
 	actionlib_msgs
 	move_base_msgs
@@ -27,6 +24,12 @@ add_message_files(
   FILES
   Omron.msg
 )
+
+add_service_files(
+  FILES
+  DockRequest.srv
+)
+
 
 generate_messages(
   DEPENDENCIES
@@ -43,7 +46,6 @@ catkin_package()
 include_directories(
 # include
   ${catkin_INCLUDE_DIRS}
-  src
 )
 
 
