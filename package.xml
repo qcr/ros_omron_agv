@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>ros_omron_driver</name>
+  <name>ros_omron_agv</name>
   <version>0.0.0</version>
   <description>The omron_driver package</description>
 
@@ -50,7 +50,7 @@
   <!--   <doc_depend>doxygen</doc_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
   
-  <depend>rv_libaria</depend>
+  <depend>libaria</depend>
   <depend>tf</depend>
   <depend>tf2</depend>
   <depend>actionlib</depend>

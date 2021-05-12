@@ -14,8 +14,8 @@
 #include <move_base_msgs/MoveBaseAction.h>
 #include <actionlib/server/simple_action_server.h>
 #include <actionlib_msgs/GoalStatus.h>
-#include <ros_omron_driver/DockRequest.h>
-#include "ros_omron_driver/Omron.h"
+#include <ros_omron_agv/DockRequest.h>
+#include "ros_omron_agv/Omron.h"
 #include <std_srvs/Empty.h>
 
 #include <cmath>
@@ -33,7 +33,7 @@ public:
   void LocaliseCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg);
   void moveExecteCB(const move_base_msgs::MoveBaseGoalConstPtr &goal);
 
-  bool requestDock(ros_omron_driver::DockRequest::Request &req, ros_omron_driver::DockRequest::Response &res){
+  bool requestDock(ros_omron_agv::DockRequest::Request &req, ros_omron_agv::DockRequest::Response &res){
     res.result = true;
     myClient->requestOnce("dock");
     return true;
@@ -120,7 +120,7 @@ statusPub::statusPub(ArClientBase *client, ros::NodeHandle *nh, std::string name
   service = _nh->advertiseService("dock", &statusPub::requestDock, this);
 
   //Advertise Publisher
-  status_pub = _nh->advertise<ros_omron_driver::Omron>("robot_status", 100);
+  status_pub = _nh->advertise<ros_omron_agv::Omron>("robot_status", 100);
 
   //Cmd vel
   cmdVelSub = _nh->subscribe("cmd_vel", 10, &statusPub::cmdVelCB, this); //register callback
@@ -161,7 +161,7 @@ void statusPub::pose_cb(ArNetPacket *packet)
   currentPose.pose.position.y = y/1000.0;
   currentPose.pose.position.z = 0;
 
-  ros_omron_driver::Omron data;
+  ros_omron_agv::Omron data;
   data.batteryPercentage = batVolt;
   data.dockStatus = dock_status;
   data.robotStatus = robotStatus;

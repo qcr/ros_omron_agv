@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(ros_omron_driver)
+project(ros_omron_agv)
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
@@ -15,7 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
 	actionlib_msgs
 	move_base_msgs
 	message_generation
-	rv_libaria
+	libaria
 )
 
 find_package(Boost REQUIRED COMPONENTS thread)
@@ -44,7 +44,6 @@ catkin_package()
 ###########
 
 include_directories(
-# include
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -63,4 +62,18 @@ target_link_libraries(robot_status_node
 
 target_link_libraries(map_node
   ${catkin_LIBRARIES}
+)
+
+#############
+## Install ##
+#############
+
+install(TARGETS omron_laser_node robot_status_node map_node
+   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+install(DIRECTORY launch/ rviz/ docs/
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
