@@ -63,6 +63,7 @@
   <depend>tf</depend>
   <depend>tf2</depend>
   <depend>tf2_eigen</depend>
+  <depend>tf2_geometry_msgs</depend>
   <depend>tf2_ros</depend>
   
   <build_depend>message_generation</build_depend>
