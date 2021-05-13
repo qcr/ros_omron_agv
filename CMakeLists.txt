@@ -51,8 +51,13 @@ include_directories(
 
 
 add_executable(omron_laser_node src/laser_node.cpp)
+add_dependencies(omron_laser_node ros_omron_agv_generate_messages_cpp
+
 add_executable(robot_status_node src/robot_status.cpp)
+add_dependencies(robot_status_node ros_omron_agv_generate_messages_cpp
+
 add_executable(map_node src/map_server.cpp)
+add_dependencies(map_node ros_omron_agv_generate_messages_cpp
 
 target_link_libraries(omron_laser_node
   ${catkin_LIBRARIES}
