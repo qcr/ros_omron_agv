@@ -81,6 +81,6 @@ install(TARGETS omron_laser_node robot_status_node map_node
    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
-install(DIRECTORY launch/ rviz/ docs/
+install(DIRECTORY launch rviz docs
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
