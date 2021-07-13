@@ -1,13 +1,23 @@
 <?xml version="1.0"?>
 <!--Launch file to start the omron base-->
 <launch>
+  <arg name="host" default="10.10.10.10" />
+  <arg name="port" default="7272" />
+  <arg name="user" default="admin" />
+  
   <node pkg="ros_omron_agv" type="omron_laser_node" name="lasers" output="screen" respawn="false" respawn_delay="0">
-    <param name="user" type="str" value="steve"/>
+    <param name="host" type="str" value="$(arg host)"/>
+    <param name="port" type="str" value="$(arg port)"/>
+    <param name="user" type="str" value="$(arg user)"/>
   </node>
   <node pkg="ros_omron_agv" type="robot_status_node" name="status" output="screen" respawn="false" respawn_delay="0">
-    <param name="user" type="str" value="steve"/>
+    <param name="host" type="str" value="$(arg host)"/>
+    <param name="port" type="str" value="$(arg port)"/>
+    <param name="user" type="str" value="$(arg user)"/>
   </node>
   <node pkg="ros_omron_agv" type="map_node" name="map" output="screen" respawn="true" respawn_delay="0">
-    <param name="user" type="str" value="steve"/>
+    <param name="host" type="str" value="$(arg host)"/>
+    <param name="port" type="str" value="$(arg port)"/>
+    <param name="user" type="str" value="$(arg user)"/>
   </node>
 </launch>
