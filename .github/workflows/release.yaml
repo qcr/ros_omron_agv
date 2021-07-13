@@ -46,3 +46,4 @@ jobs:
         ref: ${{ github.ref }}
         repo: ${{ github.repository }}
         files: ${{ steps.upload.outputs.browser_download_urls }}
+        packages: ${{ steps.build.outputs.packages }}
